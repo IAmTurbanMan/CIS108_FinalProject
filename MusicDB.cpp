@@ -445,12 +445,12 @@ void playSong()
 	}
 
 	string mp3FileToPlay = "open " + mp3File + " type mpegvideo alias mp3";
-	MCIERROR me = mciSendString(mp3FileToPlay.c_str(), NULL, 0, 0);
+	MCIERROR me = mciSendString(mp3FileToPlay.c_str(), NULL, 0, NULL);
 
 	if (me == 0)
 	{
-		me = mciSendString("play mp3 wait", NULL, 0, 0);
-		mciSendString("close mp3", NULL, 0, 0);
+		me = mciSendString("play mp3 wait", NULL, 0, NULL);
+		mciSendString("close mp3", NULL, 0, NULL);
 	}
 
 	else
