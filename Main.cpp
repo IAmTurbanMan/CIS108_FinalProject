@@ -1,3 +1,4 @@
+#include <Windows.h>
 #include <iostream>
 #include <fstream>
 #include <string>
@@ -8,11 +9,16 @@
 using namespace std;
 using namespace metadata;
 
-const string fileName = "C:\\Users\\rashi\\Desktop\\IoT\\Term 1\\CIS108 - C++\\Assignments\\CIS108_FinalProject\\MusicDatabase.txt";
-
 int main()
 {	
-	programLoad(fileName);									//call function at program start to add load txt file into databse
+	//This first bit of code gets the full path of where the MusicDatabse.txt is
+	//it prepends the working directory to the file name
+	char fileName[] = "MusicDatabase.txt";
+	char fullFileName[MAX_PATH];
+
+	GetFullPathName(fileName, MAX_PATH, fullFileName, nullptr);
+
+	programLoad(fullFileName);								//call function at program start to add load txt file into databse
 
 	Song aSong;												//initialize Song structure, called aSong
 
@@ -38,7 +44,7 @@ int main()
 
 		if (selection == "save")
 		{
-			saveSong(aSong, fileName);
+			saveSong(aSong, fullFileName);
 			cout << "Database saved.\n";
 		}
 
@@ -97,7 +103,7 @@ int main()
 
 			if (yesOrNo == "y")
 			{
-				clearSong(fileName);
+				clearSong(fullFileName);
 				cout << "Database cleared.\n";
 			}
 

@@ -27,12 +27,11 @@ void programLoad(string fileName)
 	metadata::Song aSong;
 	ifstream musicDatabase;
 	mySongs.clear();
-	//char ch;
 	
 	musicDatabase.open(fileName, ios::in | ios::binary);
 	if (!musicDatabase.is_open())
 	{
-		cout << "cannot open file";
+		cout << "Unable to load database.\n";
 	}
 
 	while (musicDatabase.is_open() && musicDatabase.peek() != EOF)
