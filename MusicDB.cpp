@@ -63,13 +63,13 @@ void addSong()
 	
 	while (true)										
 	{
-		getline (cin, genreString);						//read a whole line of input
-		transform(genreString.begin(), genreString.end(), genreString.begin(), ::tolower); //convert the string genreString to lowercase
+		//read a whole line of input
+		getline (cin, genreString);
+		//convert the string genreString to lowercase
+		transform(genreString.begin(), genreString.end(), genreString.begin(), ::tolower);
 
 
 		//a series of if statements to read a string and input the string into the genre field of the struct.
-		
-		
 		if (genreString == "blues")
 		{
 			aSong.genre = aSong.Blues;
@@ -128,8 +128,8 @@ void addSong()
   	mySongs.push_back (aSong);
 }
 
-// function to save the songs to a .txt file in binary mode, credit to Wesley A.
-// I used part of his code and changed it to make sense for me.
+//function to save the songs to a .txt file in binary mode, credit to Wesley A.
+//I used part of his code and changed it to make sense for me.
 void saveSong(metadata::Song& aSong, string fileName)									
 {
 
@@ -144,7 +144,7 @@ void saveSong(metadata::Song& aSong, string fileName)
 	}
 }
 
-// function to list the songs out
+//function to list the songs out
 void listSong()
 {
 	int vectorCount = 0;
@@ -188,9 +188,12 @@ void listSong()
 //function to clear the music database
 void clearSong(string fileName)			
 {
-	mySongs.clear();											// clear the vector
-	fstream musicDatabase;										// clear the txt file
-	musicDatabase.open(fileName, ios::out | ios::trunc);		// code taken from https://stackoverflow.com/questions/17032970/clear-data-inside-text-file-in-c
+	//clear the vector
+	mySongs.clear();
+	//clear the txt file
+	fstream musicDatabase;
+	//code taken from https://stackoverflow.com/questions/17032970/clear-data-inside-text-file-in-c
+	musicDatabase.open(fileName, ios::out | ios::trunc);
 	musicDatabase.close();
 }
 
@@ -428,16 +431,20 @@ void playSong()
 	string mp3File;
 	if (::GetOpenFileName(&ofn) != FALSE)
 	{
-		mp3File = ofn.lpstrFile;					//pass the filename into the string mp3File
+		//pass the filename into the string mp3File
+		mp3File = ofn.lpstrFile;					
 	}
+	//had to do some fenagling with how the mp3File string was concatenating so it would be accepted into the mciSendString function
+	mp3File = '\"' + mp3File + '\"';
 
-	mp3File = '\"' + mp3File + '\"';				//had to do some fenagling with how the mp3File string was concatenating so it would be accepted into the mciSendString function
+	//This creates the command string that the mciSendString function askes for
+	string mp3PlayCommand = "open " + mp3File + " type mpegvideo alias mp3";
 
-	string mp3PlayCommand = "open " + mp3File + " type mpegvideo alias mp3";  //This creates the command string that the mciSendString function askes for
+	//the documentation for mciSendString is here: https://docs.microsoft.com/en-us/previous-versions//dd757161(v=vs.85)
+	MCIERROR me = mciSendString(mp3PlayCommand.c_str(), NULL, 0, 0);
 
-	MCIERROR me = mciSendString(mp3PlayCommand.c_str(), NULL, 0, 0);  //the documentation for mciSendString is here: https://docs.microsoft.com/en-us/previous-versions//dd757161(v=vs.85)
-
-	if (me == 0)  //MCIERROR should return 0 if the file was loaded succefully and the command string was correct
+	//MCIERROR should return 0 if the file was loaded succefully and the command string was correct
+	if (me == 0)  
 	{
 		me = mciSendString("play mp3", NULL, 0, 0);
 
