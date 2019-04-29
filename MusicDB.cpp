@@ -204,7 +204,6 @@ void menu()
 	cout << "save  : save the songs to the database\n";
 	cout << "sort  : sort database by title/artist/year\n";
 	cout << "clear : clear the song database\n";
-	cout << "find  : search for a song in the database\n";
 	cout << "import: import metadata from .mp3 file\n";
 	cout << "play  : play an mp3 file\n";
 	cout << "help  : display this menu\n";
