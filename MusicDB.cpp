@@ -156,22 +156,24 @@ void listSong()
 		cout << "Track : " << aSong.track << "\n";
 		cout << "Year  : " << aSong.releaseYear << "\n";
 		if (aSong.genre == 0)
-			cout << "Genre : Blues\n";
+			cout << "Genre : Unknown\n";
 		if (aSong.genre == 1)
-			cout << "Genre : Country\n";
+			cout << "Genre : Blues\n";
 		if (aSong.genre == 2)
-			cout << "Genre : Electronic\n";
+			cout << "Genre : Country\n";
 		if (aSong.genre == 3)
-			cout << "Genre : Folk\n";
+			cout << "Genre : Electronic\n";
 		if (aSong.genre == 4)
-			cout << "Genre : Hip Hop\n";
+			cout << "Genre : Folk\n";
 		if (aSong.genre == 5)
-			cout << "Genre : Jazz\n";
+			cout << "Genre : Hip Hop\n";
 		if (aSong.genre == 6)
-			cout << "Genre : Latin\n";
+			cout << "Genre : Jazz\n";
 		if (aSong.genre == 7)
-			cout << "Genre : Pop\n";
+			cout << "Genre : Latin\n";
 		if (aSong.genre == 8)
+			cout << "Genre : Pop\n";
+		if (aSong.genre == 9)
 			cout << "Genre : Rock\n";
 		cout << "\n";
 		vectorCount++;
@@ -280,11 +282,13 @@ void importSong()
 			throw new exception("Failed to load MP3 file");
 		}
 
-		//
+		//Create a frame to put the extracted title into
 		ID3_Frame* titleFrame = songTag.Find(ID3FID_TITLE);
 		if (NULL != titleFrame)
 		{
+			//create a text field for the title
 			ID3_Field* titleField = titleFrame->GetField(ID3FN_TEXT);
+			//pass the text field into aSong struct
 			titleField->Get(aSong.title, 64);
 			aSong.title[64 - 1] = '\0';
 		}
@@ -397,6 +401,8 @@ void importSong()
 Function to play an mp3 file
 Will open a dialog box and ask what file you would like to play
 Filter will only accept mp3 files
+pause, play, and stop functionality in the "mp3 player"
+stop will close the file and exit out of the function
 */
 
 void playSong()
