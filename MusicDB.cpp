@@ -236,39 +236,6 @@ void sortTitle()
 	sort(mySongs.begin(), mySongs.end(), sortByTitle);
 }
 
-//bool songSearch(metadata::Song search, string searchByTitle)
-//{
-//
-//}
-//
-//void findSong()
-//{
-//	find_if(mySongs.begin(), mySongs.end(), );
-//}
-
-//string getFileName()
-//{
-//	OPENFILENAME ofn;
-//	::memset(&ofn, 0, sizeof(ofn));
-//	char f1[MAX_PATH];
-//	f1[0] = 0;
-//	ofn.lStructSize = sizeof(ofn);
-//	ofn.lpstrTitle = "Select A File";
-//	ofn.lpstrFilter = "Text Files\0*.txt\0All Files\0*.*\0\0";
-//	ofn.nFilterIndex = 2;
-//	ofn.lpstrFile = f1;
-//	ofn.nMaxFile = MAX_PATH;
-//	ofn.Flags = OFN_FILEMUSTEXIST;
-//
-//	string filePath;
-//	if (::GetOpenFileName(&ofn) != false)
-//	{
-//		filePath = ofn.lpstrFile;
-//		cout << filePath;
-//	}
-//	return filePath;
-//}
-
 /*
 Function to import song metadata into the database from an mp3 file.
 The first part of this opens a dialog box asking for the file you want to import.
@@ -284,7 +251,7 @@ void importSong()
 	f1[0] = 0;
 	ofn.lStructSize = sizeof(ofn);
 	ofn.lpstrTitle = "Please select a song to import";
-	ofn.lpstrFilter = "Text Files\0*.txt\0All Files\0*.*\0\0";
+	ofn.lpstrFilter = "Supported Files\0*.mp3\0";
 	ofn.nFilterIndex = 2;
 	ofn.lpstrFile = f1;
 	ofn.nMaxFile = MAX_PATH;
@@ -432,7 +399,7 @@ void playSong()
 	f1[0] = 0;
 	ofn.lStructSize = sizeof(ofn);
 	ofn.lpstrTitle = "Please select a song to play";
-	ofn.lpstrFilter = "Text Files\0*.txt\0All Files\0*.*\0\0";
+	ofn.lpstrFilter = "Text Files\0*.mp3\0";
 	ofn.nFilterIndex = 2;
 	ofn.lpstrFile = f1;
 	ofn.nMaxFile = MAX_PATH;
@@ -452,15 +419,41 @@ void playSong()
 
 	if (me == 0)
 	{
-		me = mciSendString("play mp3 wait", NULL, 0, 0);
-		mciSendString("close mp3", NULL, 0, 0);
-	}
+		me = mciSendString("play mp3", NULL, 0, 0);
 
+		bool isPlaying = true;
+		bool isPaused = false;
+		string mp3PlayerOperation;
+		cout << "p: Pause/Play" << endl << "o: Stop" << endl;
+		while (true)
+		{
+			cout << ">";
+			cin >> mp3PlayerOperation;
+			transform(mp3PlayerOperation.begin(), mp3PlayerOperation.end(), mp3PlayerOperation.begin(), ::tolower);
+
+			if (mp3PlayerOperation == "p" && isPlaying == true)
+			{
+				mciSendString("pause mp3", NULL, 0, 0);
+				isPlaying = false;
+				isPaused = true;
+			}
+
+			if (mp3PlayerOperation == "p" && isPaused == true)
+			{
+				mciSendString("play mp3", NULL, 0, 0);
+				isPlaying = true;
+				isPaused = false;
+			}
+
+			if (mp3PlayerOperation == "o")
+			{
+				mciSendString("close mp3", NULL, 0, 0);
+				break;
+			}
+		}
+	}
 	else
 	{
 		cout << mp3File << " could not be opened.\n";
 	}
-	/*mciSendString("play mp3", NULL, 0, NULL);
-	mciSendString("setaudio mp3 volume to 750", NULL, 0, NULL);*/
-	//mciSendString("close mp3", NULL, 0, NULL);
 }
