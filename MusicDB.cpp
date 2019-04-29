@@ -241,10 +241,12 @@ Function to import song metadata into the database from an mp3 file.
 The first part of this opens a dialog box asking for the file you want to import.
 It extracts the filename for use in the id3 tag.
 Found code at: https://www.experts-exchange.com/questions/21072213/C-Console-Browse-for-file-dialog-return-path-of-file-as-string.html
+Filter will only accept .mp3 files
 gotchas: First time you run it will be pretty slow. Give it some time to load everything.
 */
 void importSong()
 {
+	//Open file dialog box to extract file name
 	OPENFILENAME ofn;
 	::memset(&ofn, 0, sizeof(ofn));
 	char f1[MAX_PATH];
@@ -262,7 +264,7 @@ void importSong()
 	{
 		mp3File = ofn.lpstrFile;
 
-
+		//initialize the tag for the song to look through the metadata of the file using the extracted filename
 		ID3_Tag songTag;
 		try
 		{
@@ -278,6 +280,7 @@ void importSong()
 			throw new exception("Failed to load MP3 file");
 		}
 
+		//
 		ID3_Frame* titleFrame = songTag.Find(ID3FID_TITLE);
 		if (NULL != titleFrame)
 		{
@@ -390,16 +393,22 @@ void importSong()
 		cout << "No file chosen.\n";
 	}
 }
+/*
+Function to play an mp3 file
+Will open a dialog box and ask what file you would like to play
+Filter will only accept mp3 files
+*/
 
 void playSong()
 {
+	//This first part opens the open file dialog box
 	OPENFILENAME ofn;
 	::memset(&ofn, 0, sizeof(ofn));
 	char f1[MAX_PATH];
 	f1[0] = 0;
 	ofn.lStructSize = sizeof(ofn);
 	ofn.lpstrTitle = "Please select a song to play";
-	ofn.lpstrFilter = "Text Files\0*.mp3\0";
+	ofn.lpstrFilter = "Supported Files\0*.mp3\0";  //Filter out the files that are supported
 	ofn.nFilterIndex = 2;
 	ofn.lpstrFile = f1;
 	ofn.nMaxFile = MAX_PATH;
@@ -408,16 +417,16 @@ void playSong()
 	string mp3File;
 	if (::GetOpenFileName(&ofn) != FALSE)
 	{
-		mp3File = ofn.lpstrFile;
+		mp3File = ofn.lpstrFile;					//pass the filename into the string mp3File
 	}
 
-	mp3File = '\"' + mp3File + '\"';
+	mp3File = '\"' + mp3File + '\"';				//had to do some fenagling with how the mp3File string was concatenating so it would be accepted into the mciSendString function
 
-	string mp3PlayCommand = "open " + mp3File + " type mpegvideo alias mp3";
+	string mp3PlayCommand = "open " + mp3File + " type mpegvideo alias mp3";  //This creates the command string that the mciSendString function askes for
 
-	MCIERROR me = mciSendString(mp3PlayCommand.c_str(), NULL, 0, 0);
+	MCIERROR me = mciSendString(mp3PlayCommand.c_str(), NULL, 0, 0);  //the documentation for mciSendString is here: https://docs.microsoft.com/en-us/previous-versions//dd757161(v=vs.85)
 
-	if (me == 0)
+	if (me == 0)  //MCIERROR should return 0 if the file was loaded succefully and the command string was correct
 	{
 		me = mciSendString("play mp3", NULL, 0, 0);
 
@@ -431,23 +440,26 @@ void playSong()
 			cin >> mp3PlayerOperation;
 			transform(mp3PlayerOperation.begin(), mp3PlayerOperation.end(), mp3PlayerOperation.begin(), ::tolower);
 
+			//conditional statements to pause, play, and stop playback.
 			if (mp3PlayerOperation == "p" && isPlaying == true)
 			{
-				mciSendString("pause mp3", NULL, 0, 0);
+				me = mciSendString("pause mp3", NULL, 0, 0);
 				isPlaying = false;
 				isPaused = true;
+				continue;
 			}
 
 			if (mp3PlayerOperation == "p" && isPaused == true)
 			{
-				mciSendString("play mp3", NULL, 0, 0);
+				me = mciSendString("play mp3", NULL, 0, 0);
 				isPlaying = true;
 				isPaused = false;
+				continue;
 			}
 
 			if (mp3PlayerOperation == "o")
 			{
-				mciSendString("close mp3", NULL, 0, 0);
+				me = mciSendString("close mp3", NULL, 0, 0);
 				break;
 			}
 		}

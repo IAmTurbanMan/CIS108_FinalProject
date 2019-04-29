@@ -24,8 +24,5 @@ void sortTitle();
 void importSong();
 
 void playSong();
-//void findSong();
-
-//bool songSearch(metadata::Song& search, string s);
 
 void menu();

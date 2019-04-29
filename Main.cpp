@@ -7,7 +7,8 @@
 
 using namespace std;
 using namespace metadata;
-string fileName = "MusicDatabase.txt";
+
+const string fileName = "MusicDatabase.txt";
 
 int main()
 {	
@@ -45,15 +46,6 @@ int main()
 		{
 			listSong();
 		}
-
-		//if (selection == "find")
-		//{
-		//	cout << "What song are you trying to find? ";
-		//	string songToSearch;
-		//	cin >> songToSearch;
-		//	//songSearch(aSong, songToSearch);
-		//	findSong();
-		//}
 
 		if (selection == "sort")
 		{
