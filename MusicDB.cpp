@@ -15,13 +15,16 @@
 
 using namespace std;
 
-//intializing Song data type as aSong and vector as mySongs
 metadata::Song aSong;
 
 vector <metadata::Song> mySongs;
 
 
-//function to load .txt file into database
+/*
+Function to load .txt file into database
+This will run when the program loads in order to load everything that was saved
+in the .txt file into the vector.
+*/
 void programLoad(string fileName)
 {
 	metadata::Song aSong;
@@ -42,31 +45,35 @@ void programLoad(string fileName)
 	musicDatabase.close();
 }
 
-//function to add a song to the database
+/*
+Function to add a song to the database
+It will ask for user input and enter that into the structure key by key
+There are a list of genres that you can use
+If you enter a genre that is not in the list, it will return as Unknown
+*/
 void addSong()
 {
 	cout << "\n" << "Enter song title: ";
-	cin.getline (aSong.title, 64);						//input into the title of the aSong struct
+	cin.getline (aSong.title, 64);
 	cout << "Enter artist: ";
-	cin.getline (aSong.artist, 64);						//input into artist
+	cin.getline (aSong.artist, 64);
 	cout << "Enter album: ";
-	cin.getline (aSong.album, 64);						//input into album
+	cin.getline (aSong.album, 64);
 	cout << "Enter track number: ";
-	cin >> aSong.track;									//input into track
+	cin >> aSong.track;
 	cout << "Enter release year: ";
-	cin >> aSong.releaseYear;							//input into  release year
+	cin >> aSong.releaseYear;
 	cout << " Blues\n" << " Country\n" << " Electronic\n" << " Folk\n" << " Hip Hop\n" << " Jazz\n" << " Latin\n" << " Pop\n" << " Rock\n";
-	cout << "Choose a genre: ";							//list genres, then ask for input
+	cout << "Choose a genre: ";
 
 	string genreString;
 	
 	while (true)										
 	{
-		//read a whole line of input
 		getline (cin, genreString);
-		//convert the string genreString to lowercase
 		transform(genreString.begin(), genreString.end(), genreString.begin(), ::tolower);
 
+		aSong.genre = aSong.Unknown;
 
 		//a series of if statements to read a string and input the string into the genre field of the struct.
 		if (genreString == "blues")
@@ -127,8 +134,10 @@ void addSong()
   	mySongs.push_back (aSong);
 }
 
-//function to save the songs to a .txt file in binary mode, credit to Wesley A.
-//I used part of his code and changed it to make sense for me.
+/*
+Function to save the songs to a .txt file in binary mode, credit to Wesley A.
+I used part of his code and changed it to make sense for me.
+*/
 void saveSong(metadata::Song& aSong, string fileName)									
 {
 
@@ -143,7 +152,10 @@ void saveSong(metadata::Song& aSong, string fileName)
 	}
 }
 
-//function to list the songs out
+/*
+Function to list the songs out on the console
+
+*/
 void listSong()
 {
 	int vectorCount = 0;
@@ -184,18 +196,23 @@ void listSong()
 	}
 }
 
-//function to clear the music database
+/*
+function to clear the music database
+code to clear text file taken from: https://stackoverflow.com/questions/17032970/clear-data-inside-text-file-in-c
+Args:
+string fileName, will be provided in the Main.cpp
+*/
 void clearSong(string fileName)			
 {
-	//clear the vector
 	mySongs.clear();
-	//clear the txt file
 	fstream musicDatabase;
-	//code taken from https://stackoverflow.com/questions/17032970/clear-data-inside-text-file-in-c
 	musicDatabase.open(fileName, ios::out | ios::trunc);
 	musicDatabase.close();
 }
 
+/*
+Function to list the menu on the console
+*/
 void menu()
 {
 	cout << "add   : add a song to the database\n";
@@ -209,11 +226,19 @@ void menu()
 	cout << "x     : exit the program\n";
 }
 
+/*
+Method for sort by year
+Will be used in the sortYear function
+*/
 bool sortByYear(metadata::Song left, metadata::Song right)
 {
 	return (left.releaseYear < right.releaseYear);
 }
 
+/*
+Function to sort by year
+No arguments, but it takes the boolean value from bool sortByYear
+*/
 void sortYear()
 {
 	sort(mySongs.begin(), mySongs.end(), sortByYear);
@@ -227,10 +252,14 @@ bool sortByArtist(metadata::Song left, metadata::Song right)
 	return strcmp(l, r) < 0;
 }
 
+/*
+Function to sort by artist
+*/
 void sortArtist()
 {
 	sort(mySongs.begin(), mySongs.end(), sortByArtist);
 }
+
 
 bool sortByTitle(metadata::Song left, metadata::Song right)
 {
@@ -250,11 +279,11 @@ The first part of this opens a dialog box asking for the file you want to import
 It extracts the filename for use in the id3 tag.
 Found code at: https://www.experts-exchange.com/questions/21072213/C-Console-Browse-for-file-dialog-return-path-of-file-as-string.html
 Filter will only accept .mp3 files
-gotchas: First time you run it will be pretty slow. Give it some time to load everything.
+The rest uses the id3 library to extract the field we are looking for and put them into
+the corresponding keys in a Song struct.
 */
 void importSong()
 {
-	//Open file dialog box to extract file name
 	OPENFILENAME ofn;
 	::memset(&ofn, 0, sizeof(ofn));
 	char f1[MAX_PATH];
@@ -272,7 +301,6 @@ void importSong()
 	{
 		mp3File = ofn.lpstrFile;
 
-		//initialize the tag for the song to look through the metadata of the file using the extracted filename
 		ID3_Tag songTag;
 		try
 		{
@@ -288,13 +316,10 @@ void importSong()
 			throw new exception("Failed to load MP3 file");
 		}
 
-		//Create a frame to put the extracted title into
 		ID3_Frame* titleFrame = songTag.Find(ID3FID_TITLE);
 		if (NULL != titleFrame)
 		{
-			//create a text field for the title
 			ID3_Field* titleField = titleFrame->GetField(ID3FN_TEXT);
-			//pass the text field into aSong struct
 			titleField->Get(aSong.title, 64);
 			aSong.title[64 - 1] = '\0';
 		}
@@ -409,18 +434,19 @@ Will open a dialog box and ask what file you would like to play
 Filter will only accept mp3 files
 pause, play, and stop functionality in the "mp3 player"
 stop will close the file and exit out of the function
+MCI documentation that I used can be found here:the documentation for mciSendString is here: https://docs.microsoft.com/en-us/previous-versions//dd757161(v=vs.85)
+MCIERROR should return 0 if everything works out
 */
 
 void playSong()
 {
-	//This first part opens the open file dialog box
 	OPENFILENAME ofn;
 	::memset(&ofn, 0, sizeof(ofn));
 	char f1[MAX_PATH];
 	f1[0] = 0;
 	ofn.lStructSize = sizeof(ofn);
 	ofn.lpstrTitle = "Please select a song to play";
-	ofn.lpstrFilter = "Supported Files\0*.mp3\0";  //Filter out the files that are supported
+	ofn.lpstrFilter = "Supported Files\0*.mp3\0";
 	ofn.nFilterIndex = 2;
 	ofn.lpstrFile = f1;
 	ofn.nMaxFile = MAX_PATH;
@@ -429,19 +455,15 @@ void playSong()
 	string mp3File;
 	if (::GetOpenFileName(&ofn) != FALSE)
 	{
-		//pass the filename into the string mp3File
 		mp3File = ofn.lpstrFile;					
 	}
 	//had to do some fenagling with how the mp3File string was concatenating so it would be accepted into the mciSendString function
 	mp3File = '\"' + mp3File + '\"';
 
-	//This creates the command string that the mciSendString function askes for
 	string mp3PlayCommand = "open " + mp3File + " type mpegvideo alias mp3";
 
-	//the documentation for mciSendString is here: https://docs.microsoft.com/en-us/previous-versions//dd757161(v=vs.85)
 	MCIERROR me = mciSendString(mp3PlayCommand.c_str(), NULL, 0, 0);
 
-	//MCIERROR should return 0 if the file was loaded succefully and the command string was correct
 	if (me == 0)  
 	{
 		me = mciSendString("play mp3", NULL, 0, 0);
@@ -456,7 +478,6 @@ void playSong()
 			cin >> mp3PlayerOperation;
 			transform(mp3PlayerOperation.begin(), mp3PlayerOperation.end(), mp3PlayerOperation.begin(), ::tolower);
 
-			//conditional statements to pause, play, and stop playback.
 			if (mp3PlayerOperation == "p" && isPlaying == true)
 			{
 				me = mciSendString("pause mp3", NULL, 0, 0);
