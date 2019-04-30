@@ -11,16 +11,19 @@ using namespace metadata;
 
 int main()
 {	
-	//This first bit of code gets the full path of where the MusicDatabse.txt is
-	//it prepends the working directory to the file name
+	/*
+	This first bit of code gets the full path of where the MusicDatabse.txt is
+	it prepends the working directory to the file name.
+	This should, in theory, make this program work on different computers.
+	*/
 	char fileName[] = "MusicDatabase.txt";
 	char fullFileName[MAX_PATH];
 
 	GetFullPathName(fileName, MAX_PATH, fullFileName, nullptr);
 
-	programLoad(fullFileName);								//call function at program start to add load txt file into databse
+	programLoad(fullFileName);
 
-	Song aSong;												//initialize Song structure, called aSong
+	Song aSong;
 
 	menu();
 
